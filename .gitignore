@@ -1,0 +1,10 @@
+# .gitignore
+# 민감한 DB 정보 및 보안 키 제외
+.env
+
+# 설치된 패키지 폴더 제외 (받는 사람이 직접 설치해야 함)
+node_modules
+
+# 기타 로그 및 OS 파일 제외
+npm-debug.log*
+.DS_Store
