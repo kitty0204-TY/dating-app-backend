@@ -22,6 +22,7 @@ pool.getConnection()
   })
   .catch(err => {
     console.error('❌ Database connection failed:', err.message);
+    console.error('>> DB 접속 정보를 확인하거나 MySQL 서버를 실행해 주세요.');
   });
 
 module.exports = pool;

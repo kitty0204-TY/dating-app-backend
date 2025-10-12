@@ -1,8 +1,8 @@
-// src/controllers/userController.js
 const userModel = require('../models/userModel');
 
 // GET /api/users/me (내 프로필 조회)
-async function getMyProfile(req, res) {
+async function getProfile(req, res) {
+    // 인증 미들웨어(auth.js)에서 추가된 사용자 ID를 가져옴
     const userId = req.user.id; 
 
     try {
@@ -11,6 +11,8 @@ async function getMyProfile(req, res) {
         if (!userProfile) {
             return res.status(404).json({ message: "사용자 프로필을 찾을 수 없습니다." });
         }
+        
+        // 비밀번호를 제외한 프로필 정보만 클라이언트에 응답
         res.status(200).json(userProfile);
     } catch (error) {
         console.error('프로필 조회 중 오류 발생:', error);
@@ -67,7 +69,7 @@ const checkInLocation = async (req, res) => {
 };
 
 module.exports = {
-    getMyProfile,
+    getMyProfile: getProfile,
     updateProfile,
     checkInLocation,
 };

@@ -1,63 +1,36 @@
 // src/controllers/matchController.js
 const matchModel = require('../models/matchModel');
-const userModel = require('../models/userModel'); 
+// 💡 userModel에서 필요한 함수(findUserById)만 명시적으로 구조 분해 할당하여 가져옵니다.
+const { findUserById } = require('../models/userModel'); 
 
 /**
  * GET /api/matches/candidates - 매칭 후보 목록 조회
  */
-async function getCandidates(req, res) { 
+async function getCandidates(req, res) {
+    // req.user는 인증 미들웨어에서 추가된 로그인 사용자 정보 (ID, email)
     const userId = req.user.id; 
 
     try {
-        // 1. 현재 사용자 정보 가져오기 (위치 정보를 위해 userModel.findUserById 사용)
-        const currentUser = await userModel.findUserById(userId); 
+        // 1. 현재 사용자의 성별 정보를 가져와서 반대 성별 후보를 찾기 위해 사용
+        // 이제 findUserById 함수를 직접 호출합니다.
+        const currentUser = await findUserById(userId); 
         if (!currentUser) {
             return res.status(404).json({ message: "사용자 정보를 찾을 수 없습니다." });
         }
-        
-        const targetGender = currentUser.gender === 'male' ? 'female' : 'male';
-        const limitInt = 10; // limit을 10으로 고정
 
-        // 💡 2. 위치 기반 우선 순위 로직
-        const currentLocation = currentUser.current_location_id;
-        let locationPriorityClause = '';
-        
-        if (currentLocation) {
-            // ORDER BY 절에 위치 우선 순위 추가
-            locationPriorityClause = `
-                CASE WHEN u.current_location_id = '${currentLocation}' THEN 0 ELSE 1 END,
-            `;
-        }
+        // 2. 모델을 통해 후보 목록을 조회
+        const candidates = await matchModel.getCandidates(
+            userId, 
+            currentUser.gender, // 👈 currentUser 객체에서 gender 필드를 사용
+            10
+        );
 
-        // 3. 매칭 후보 조회 쿼리
-        const query = `
-            SELECT 
-                u.id, u.email, u.nickname, u.gender, u.birth_date, u.bio, u.profile_image_url
-            FROM 
-                users u
-            WHERE 
-                u.gender = ?
-                AND u.id != ?
-                AND u.id NOT IN (
-                    SELECT user_id_target 
-                    FROM matches 
-                    WHERE user_id_swiper = ?
-                )
-            ORDER BY
-                ${locationPriorityClause} 
-                u.created_at DESC         
-            LIMIT ${limitInt}
-        `;
-        
-        // 4. DB 쿼리 실행
-        const [rows] = await dbPool.execute(query, [targetGender, userId, userId]);
-
-        res.status(200).json(rows);
+        res.status(200).json(candidates);
     } catch (error) {
         console.error('후보 조회 중 서버 오류 발생:', error);
         res.status(500).json({ message: '서버 오류로 인해 후보 조회에 실패했습니다.' });
     }
-};
+}
 
 /**
  * POST /api/matches/swipe - 스와이프 처리 (좋아요/싫어요)
@@ -95,7 +68,7 @@ async function swipe(req, res) {
         console.error('스와이프 처리 중 서버 오류 발생:', error);
         res.status(500).json({ message: '스와이프 처리 중 서버 오류가 발생했습니다.' });
     }
-};
+}
 
 module.exports = {
     getCandidates,
