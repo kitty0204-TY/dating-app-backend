@@ -23,8 +23,8 @@ async function getProfile(req, res) {
 // PUT /api/users/me (내 프로필 수정)
 const updateProfile = async (req, res) => {
     const userId = req.user.id;
-    // 수정 가능한 모든 필드
-    const { nickname, bio, profile_image_url, real_name, tags, photo_status } = req.body;
+    // 💡 majorId를 가져오도록 추가
+    const { nickname, bio, profile_image_url, real_name, tags, photo_status, majorId } = req.body;
     
     const updateFields = {};
     if (nickname !== undefined) updateFields.nickname = nickname;
@@ -33,6 +33,7 @@ const updateProfile = async (req, res) => {
     if (real_name !== undefined) updateFields.real_name = real_name;
     if (tags !== undefined) updateFields.tags = tags;
     if (photo_status !== undefined) updateFields.photo_status = photo_status; // 'yes' 또는 'no'
+    if (majorId !== undefined) updateFields.major_id = majorId;
 
     if (Object.keys(updateFields).length === 0) {
         return res.status(400).json({ message: '업데이트할 정보가 없습니다.' });
