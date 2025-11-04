@@ -3,12 +3,12 @@ const dbPool = require('../config/db');
 
 // 새 사용자 생성 (회원가입)
 // 💡 majorId 인자를 추가하고 쿼리에도 반영
-const registerUser = async (email, hashedPassword, nickname, realName, gender, birth_date, tags, majorId) => {
+const registerUser = async (email, hashedPassword, nickname, realName, gender, birth_date, tags, majorId, mbti) => {
     const query = `
-        INSERT INTO users (email, password, nickname, real_name, gender, birth_date, tags, major_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (email, password, nickname, real_name, gender, birth_date, tags, major_id, mbti)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const [result] = await dbPool.execute(query, [email, hashedPassword, nickname, realName, gender, birth_date, tags, majorId]);
+    const [result] = await dbPool.execute(query, [email, hashedPassword, nickname, realName, gender, birth_date, tags, majorId, mbti]);
     return result.insertId;
 };
 

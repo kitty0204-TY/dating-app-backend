@@ -7,37 +7,27 @@ const JWT_SECRET = process.env.JWT_SECRET; //
 const SALT_ROUNDS = 10; // 비밀번호 해싱 강도
 
 const register = async (req, res) => {
-    // 💡 majorId와 tags를 req.body에서 가져옵니다.
-    const { email, password, nickname, gender, birth_date, real_name, tags, majorId } = req.body; 
+    // 💡 mbti 필드 추가
+    const { email, password, nickname, gender, birth_date, real_name, tags, majorId, mbti } = req.body; 
 
-    // 필수 입력값 검사: tags와 majorId는 이제 필수입니다.
+    // 💡 필수 입력값 검사 (mbti는 선택 사항일 수 있으므로 제외)
     if (!email || !password || !nickname || !gender || !birth_date || !majorId || !tags) { 
         return res.status(400).json({ message: '모든 필수 정보를 입력해야 합니다.' });
     }
     
     try {
-        // ... (중복 검사 및 해싱 로직 유지) ...
+        // ... (중복 검사, 해싱 로직 유지) ...
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-        // real_name은 선택 사항이므로, 값이 없으면 null로 처리
         const finalRealName = real_name || null;
-        
-        // tags는 콤마 구분 문자열로 가정하고 그대로 전달
-        const finalTags = tags;
-        
-        // majorId를 정수형으로 변환합니다. (DB 타입 일치)
+        const finalTags = tags || null; 
+        const finalMbti = mbti || null; // 👈 mbti 처리
         const finalMajorId = parseInt(majorId, 10); 
 
-        // 4. 사용자 등록 (userModel.js에 정의된 순서와 일치해야 합니다!)
+        // 4. 사용자 등록 (userModel.js 수정 필요!)
         const userId = await userModel.registerUser(
-            email,
-            hashedPassword,
-            nickname,
-            finalRealName, 
-            gender,
-            birth_date,
-            finalTags, // 👈 태그 전달
-            finalMajorId // 👈 학과 ID 전달
+            email, hashedPassword, nickname, finalRealName, 
+            gender, birth_date, finalTags, finalMajorId, finalMbti // 👈 mbti 전달
         );
 
         res.status(201).json({ message: '회원가입에 성공했습니다.', userId: userId });

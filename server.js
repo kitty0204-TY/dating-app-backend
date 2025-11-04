@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 3000;
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes'); 
 const matchRoutes = require('./src/routes/matchRoutes'); 
-const postRoutes = require('./src/routes/postRoutes'); 
+const postRoutes = require('./src/routes/postRoutes');
+const majorRoutes = require('./src/routes/majorRoutes');
 
 app.use(express.json()); // JSON 파서 미들웨어
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes); // /api/auth/register, /login
 app.use('/api/users', userRoutes); // /api/users/me, /checkin
 app.use('/api/matches', matchRoutes); // /api/matches/candidates, /swipe
 app.use('/api/posts', postRoutes); // /api/posts (CRUD)
+app.use('/api/majors', majorRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {
