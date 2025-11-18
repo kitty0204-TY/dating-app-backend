@@ -1,11 +1,13 @@
 // server.js
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config(); 
 const dbPool = require('./src/config/db'); // DB 연결 코드
 
 const app = express();
+app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // 라우터 모듈 가져오기

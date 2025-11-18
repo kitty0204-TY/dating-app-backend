@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET; //
 const SALT_ROUNDS = 10; // 비밀번호 해싱 강도
 
 const register = async (req, res) => {
-    // 💡 mbti 필드 추가
+    console.log('프론트에서 받은 데이터:', req.body);
     const { email, password, nickname, gender, birth_date, real_name, tags, majorId, mbti } = req.body; 
 
     // 💡 필수 입력값 검사 (mbti는 선택 사항일 수 있으므로 제외)
